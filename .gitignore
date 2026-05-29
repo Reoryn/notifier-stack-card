@@ -1,0 +1,7 @@
+node_modules/
+*.log
+.DS_Store
+*.tsbuildinfo
+
+# Do NOT ignore dist — built output is committed for HACS
+!dist/
