@@ -17,7 +17,9 @@ export function resolveNotification(
     text: config.text ?? "",
     icon: config.icon ?? DEFAULTS.ICON,
     color: config.color ?? DEFAULTS.COLOR,
+    alpha: config.alpha ?? DEFAULTS.ALPHA,
     priority: config.priority ?? DEFAULTS.PRIORITY,
+    persistent: config.persistent ?? DEFAULTS.PERSISTENT,
     isActive,
   };
 }

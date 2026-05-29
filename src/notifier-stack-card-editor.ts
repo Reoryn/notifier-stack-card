@@ -38,7 +38,7 @@ export class NotifierStackCardEditor extends LitElement {
     this._fire({ ...this._config, [key]: value });
   }
 
-  private _updateNotification(index: number, key: keyof NotificationConfig, value: string): void {
+  private _updateNotification(index: number, key: keyof NotificationConfig, value: string | number | boolean): void {
     const notifications = [...(this._config.notifications ?? [])];
     notifications[index] = { ...notifications[index], [key]: value };
     this._fire({ ...this._config, notifications });
@@ -241,6 +241,28 @@ export class NotifierStackCardEditor extends LitElement {
             </div>
           </div>
 
+          <!-- Alpha -->
+          <div class="field-row">
+            <label class="field-label">Opacity</label>
+            <div class="alpha-row">
+              <input
+                class="alpha-slider"
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                .value=${String(n.alpha ?? DEFAULTS.ALPHA)}
+                @input=${(e: Event) =>
+                  this._updateNotification(
+                    index,
+                    "alpha",
+                    parseFloat((e.target as HTMLInputElement).value)
+                  )}
+              />
+              <span class="alpha-value">${Math.round((n.alpha ?? DEFAULTS.ALPHA) * 100)}%</span>
+            </div>
+          </div>
+
           <!-- Priority -->
           <div class="field-row">
             <label class="field-label">Priority</label>
@@ -261,6 +283,30 @@ export class NotifierStackCardEditor extends LitElement {
                 Urgent
               </option>
             </select>
+          </div>
+
+          <!-- Persistent -->
+          <div class="field-row">
+            <label class="field-label">Persistent</label>
+            <label class="toggle-label">
+              <input
+                type="checkbox"
+                class="toggle-input"
+                .checked=${n.persistent ?? DEFAULTS.PERSISTENT}
+                @change=${(e: Event) =>
+                  this._updateNotification(
+                    index,
+                    "persistent",
+                    (e.target as HTMLInputElement).checked
+                  )}
+              />
+              <span class="toggle-track">
+                <span class="toggle-thumb"></span>
+              </span>
+              <span class="toggle-hint">
+                ${n.persistent ? "Won't dismiss on tap" : "Tap to dismiss"}
+              </span>
+            </label>
           </div>
         </div>
       </div>
@@ -396,6 +442,74 @@ export class NotifierStackCardEditor extends LitElement {
       cursor: pointer;
       background: none;
       flex-shrink: 0;
+    }
+
+    .alpha-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .alpha-slider {
+      flex: 1;
+      cursor: pointer;
+      accent-color: var(--primary-color);
+    }
+
+    .alpha-value {
+      font-size: 13px;
+      color: var(--secondary-text-color);
+      min-width: 36px;
+      text-align: right;
+    }
+
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .toggle-input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-track {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+      background: var(--divider-color, #ccc);
+      border-radius: 11px;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .toggle-input:checked ~ .toggle-track {
+      background: var(--primary-color);
+    }
+
+    .toggle-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+
+    .toggle-input:checked ~ .toggle-track .toggle-thumb {
+      transform: translateX(18px);
+    }
+
+    .toggle-hint {
+      font-size: 13px;
+      color: var(--secondary-text-color);
     }
 
     ha-entity-picker,

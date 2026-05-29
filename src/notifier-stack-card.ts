@@ -45,7 +45,7 @@ export class NotifierStackCard extends LitElement {
   }
 
   private _handleTap(notification: ResolvedNotification): void {
-    if (!this.hass) return;
+    if (!this.hass || notification.persistent) return;
     this.hass.callService("input_boolean", "turn_off", {
       entity_id: notification.entity,
     });
@@ -54,8 +54,8 @@ export class NotifierStackCard extends LitElement {
   private _renderNotification(notification: ResolvedNotification) {
     return html`
       <div
-        class="notification"
-        style="--notification-rgb: ${notification.color};"
+        class="notification ${notification.persistent ? "persistent" : ""}"
+        style="--notification-rgb: ${notification.color}; --notification-alpha: ${notification.alpha};"
         role="button"
         tabindex="0"
         aria-label="Dismiss: ${notification.text}"
@@ -77,7 +77,7 @@ export class NotifierStackCard extends LitElement {
     return html`
       <div
         class="notification empty-state"
-        style="--notification-rgb: ${DEFAULTS.EMPTY_COLOR};"
+        style="--notification-rgb: ${DEFAULTS.EMPTY_COLOR}; --notification-alpha: ${DEFAULTS.EMPTY_ALPHA};"
       >
         <ha-icon icon="${DEFAULTS.EMPTY_ICON}" class="notification-icon empty-icon"></ha-icon>
         <span class="notification-text empty-text">${DEFAULTS.EMPTY_TEXT}</span>
@@ -136,7 +136,7 @@ export class NotifierStackCard extends LitElement {
       box-sizing: border-box;
       padding: 16px;
       border-radius: 16px;
-      background: rgba(var(--notification-rgb, 120, 120, 120), 0.18);
+      background: rgba(var(--notification-rgb, 120, 120, 120), var(--notification-alpha, 0.18));
       border-left: 4px solid rgb(var(--notification-rgb, 120, 120, 120));
       cursor: pointer;
       user-select: none;
@@ -150,6 +150,10 @@ export class NotifierStackCard extends LitElement {
 
     .notification:active {
       opacity: 0.8;
+    }
+
+    .notification.persistent {
+      cursor: default;
     }
 
     .notification-icon {

@@ -573,12 +573,15 @@ function q(i) {
 const K = "notifier-stack-card", Lt = "notifier-stack-card-editor", jt = "1.0.0", l = {
   ICON: "mdi:bell-outline",
   COLOR: "120, 120, 120",
+  ALPHA: 0.18,
   PRIORITY: "normal",
+  PERSISTENT: false,
   NOTIFICATION_HEIGHT: "72px",
   NOTIFICATION_WIDTH: "100%",
   EMPTY_ICON: "mdi:check-circle-outline",
   EMPTY_TEXT: "No Notifications to Action",
-  EMPTY_COLOR: "120, 120, 120"
+  EMPTY_COLOR: "120, 120, 120",
+  EMPTY_ALPHA: 0.18
 }, Wt = "8px";
 function Bt(i, t) {
   return {
@@ -586,7 +589,9 @@ function Bt(i, t) {
     text: i.text ?? "",
     icon: i.icon ?? l.ICON,
     color: i.color ?? l.COLOR,
+    alpha: i.alpha ?? l.ALPHA,
     priority: i.priority ?? l.PRIORITY,
+    persistent: i.persistent ?? l.PERSISTENT,
     isActive: t
   };
 }
@@ -643,15 +648,16 @@ let H = class extends A {
     return ct(this._config?.notification_width, l.NOTIFICATION_WIDTH);
   }
   _handleTap(i) {
-    this.hass && this.hass.callService("input_boolean", "turn_off", {
+    if (!this.hass || i.persistent) return;
+    this.hass.callService("input_boolean", "turn_off", {
       entity_id: i.entity
     });
   }
   _renderNotification(i) {
     return $`
       <div
-        class="notification"
-        style="--notification-rgb: ${i.color};"
+        class="notification ${i.persistent ? "persistent" : ""}"
+        style="--notification-rgb: ${i.color}; --notification-alpha: ${i.alpha};"
         role="button"
         tabindex="0"
         aria-label="Dismiss: ${i.text}"
@@ -670,7 +676,7 @@ let H = class extends A {
     return $`
       <div
         class="notification empty-state"
-        style="--notification-rgb: ${l.EMPTY_COLOR};"
+        style="--notification-rgb: ${l.EMPTY_COLOR}; --notification-alpha: ${l.EMPTY_ALPHA};"
       >
         <ha-icon icon="${l.EMPTY_ICON}" class="notification-icon empty-icon"></ha-icon>
         <span class="notification-text empty-text">${l.EMPTY_TEXT}</span>
@@ -724,7 +730,7 @@ H.styles = ht`
       box-sizing: border-box;
       padding: 16px;
       border-radius: 16px;
-      background: rgba(var(--notification-rgb, 120, 120, 120), 0.18);
+      background: rgba(var(--notification-rgb, 120, 120, 120), var(--notification-alpha, 0.18));
       border-left: 4px solid rgb(var(--notification-rgb, 120, 120, 120));
       cursor: pointer;
       user-select: none;
@@ -738,6 +744,10 @@ H.styles = ht`
 
     .notification:active {
       opacity: 0.8;
+    }
+
+    .notification.persistent {
+      cursor: default;
     }
 
     .notification-icon {
@@ -988,6 +998,23 @@ let N = class extends A {
             </div>
           </div>
 
+          <!-- Alpha -->
+          <div class="field-row">
+            <label class="field-label">Opacity</label>
+            <div class="alpha-row">
+              <input
+                class="alpha-slider"
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                .value=${String(i.alpha ?? l.ALPHA)}
+                @input=${(s) => this._updateNotification(t, "alpha", parseFloat(s.target.value))}
+              />
+              <span class="alpha-value">${Math.round((i.alpha ?? l.ALPHA) * 100)}%</span>
+            </div>
+          </div>
+
           <!-- Priority -->
           <div class="field-row">
             <label class="field-label">Priority</label>
@@ -1007,6 +1034,25 @@ let N = class extends A {
                 Urgent
               </option>
             </select>
+          </div>
+
+          <!-- Persistent -->
+          <div class="field-row">
+            <label class="field-label">Persistent</label>
+            <label class="toggle-label">
+              <input
+                type="checkbox"
+                class="toggle-input"
+                .checked=${i.persistent ?? l.PERSISTENT}
+                @change=${(s) => this._updateNotification(t, "persistent", s.target.checked)}
+              />
+              <span class="toggle-track">
+                <span class="toggle-thumb"></span>
+              </span>
+              <span class="toggle-hint">
+                ${i.persistent ? "Won't dismiss on tap" : "Tap to dismiss"}
+              </span>
+            </label>
           </div>
         </div>
       </div>
@@ -1126,6 +1172,74 @@ N.styles = ht`
       cursor: pointer;
       background: none;
       flex-shrink: 0;
+    }
+
+    .alpha-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .alpha-slider {
+      flex: 1;
+      cursor: pointer;
+      accent-color: var(--primary-color);
+    }
+
+    .alpha-value {
+      font-size: 13px;
+      color: var(--secondary-text-color);
+      min-width: 36px;
+      text-align: right;
+    }
+
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .toggle-input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-track {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+      background: var(--divider-color, #ccc);
+      border-radius: 11px;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .toggle-input:checked ~ .toggle-track {
+      background: var(--primary-color);
+    }
+
+    .toggle-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+
+    .toggle-input:checked ~ .toggle-track .toggle-thumb {
+      transform: translateX(18px);
+    }
+
+    .toggle-hint {
+      font-size: 13px;
+      color: var(--secondary-text-color);
     }
 
     ha-entity-picker,

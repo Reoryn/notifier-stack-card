@@ -27,7 +27,9 @@ export interface NotificationConfig {
   text: string;
   icon?: string;
   color?: string;
+  alpha?: number;
   priority?: NotificationPriority;
+  persistent?: boolean;
 }
 
 export interface NotifierStackCardConfig {
@@ -40,6 +42,8 @@ export interface NotifierStackCardConfig {
 // Resolved notification (with defaults applied)
 export interface ResolvedNotification extends Required<NotificationConfig> {
   isActive: boolean;
+  alpha: number;
+  persistent: boolean;
 }
 
 // Lovelace editor types
