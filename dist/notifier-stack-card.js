@@ -731,7 +731,6 @@ H.styles = ht`
       padding: 16px;
       border-radius: 16px;
       background: rgba(var(--notification-rgb, 120, 120, 120), var(--notification-alpha, 0.18));
-      border-left: 4px solid rgb(var(--notification-rgb, 120, 120, 120));
       cursor: pointer;
       user-select: none;
       outline: none;
@@ -783,12 +782,7 @@ H.styles = ht`
       justify-content: center;
     }
 
-    .empty-icon {
-      opacity: 0.5;
-    }
-
     .empty-text {
-      opacity: 0.6;
       font-size: 16px;
       font-weight: 400;
       text-align: center;
