@@ -13,6 +13,8 @@ interface DragState {
 export class NotifierStackCardEditor extends LitElement {
   @property({ attribute: false }) hass!: HomeAssistant;
 
+  private static readonly _entityDomains = ["input_boolean"];
+
   @state() private _config!: NotifierStackCardConfig;
   @state() private _drag: DragState | null = null;
 
@@ -186,7 +188,7 @@ export class NotifierStackCardEditor extends LitElement {
             <ha-entity-picker
               .hass=${this.hass}
               .value=${n.entity ?? ""}
-              .includeDomains=${["input_boolean"]}
+              .includeDomains=${NotifierStackCardEditor._entityDomains}
               allow-custom-entity
               @value-changed=${(e: CustomEvent) =>
                 this._updateNotification(index, "entity", e.detail.value)}

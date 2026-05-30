@@ -805,6 +805,7 @@ let N = class extends A {
   constructor() {
     super(...arguments), this._drag = null;
   }
+  static { this._entityDomains = ["input_boolean"]; }
   setConfig(i) {
     this._config = { ...i };
   }
@@ -940,7 +941,7 @@ let N = class extends A {
             <ha-entity-picker
               .hass=${this.hass}
               .value=${i.entity ?? ""}
-              .includeDomains=${["input_boolean"]}
+              .includeDomains=${N._entityDomains}
               allow-custom-entity
               @value-changed=${(o) => this._updateNotification(t, "entity", o.detail.value)}
             ></ha-entity-picker>
