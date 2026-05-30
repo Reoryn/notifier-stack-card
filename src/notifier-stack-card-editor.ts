@@ -13,8 +13,6 @@ interface DragState {
 export class NotifierStackCardEditor extends LitElement {
   @property({ attribute: false }) hass!: HomeAssistant;
 
-  private static readonly _entityDomains = ["input_boolean"];
-
   @state() private _config!: NotifierStackCardConfig;
   @state() private _drag: DragState | null = null;
 
@@ -182,17 +180,17 @@ export class NotifierStackCardEditor extends LitElement {
         </div>
 
         <div class="notification-fields">
-          <!-- Entity picker -->
+          <!-- Entity -->
           <div class="field-row">
             <label class="field-label">Entity</label>
-            <ha-entity-picker
-              .hass=${this.hass}
+            <input
+              class="field-input"
+              type="text"
               .value=${n.entity ?? ""}
-              .includeDomains=${NotifierStackCardEditor._entityDomains}
-              allow-custom-entity
-              @value-changed=${(e: CustomEvent) =>
-                this._updateNotification(index, "entity", e.detail.value)}
-            ></ha-entity-picker>
+              placeholder="input_boolean.my_notification"
+              @change=${(e: Event) =>
+                this._updateNotification(index, "entity", (e.target as HTMLInputElement).value)}
+            />
           </div>
 
           <!-- Text -->
@@ -514,7 +512,6 @@ export class NotifierStackCardEditor extends LitElement {
       color: var(--secondary-text-color);
     }
 
-    ha-entity-picker,
     ha-icon-picker {
       display: block;
       width: 100%;
