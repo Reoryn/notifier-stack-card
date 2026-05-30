@@ -580,8 +580,8 @@ const K = "notifier-stack-card", Lt = "notifier-stack-card-editor", jt = "1.0.0"
   NOTIFICATION_WIDTH: "100%",
   EMPTY_ICON: "mdi:check-circle-outline",
   EMPTY_TEXT: "No Notifications to Action",
-  EMPTY_COLOR: "120, 120, 120",
-  EMPTY_ALPHA: 0.18
+  EMPTY_COLOR: "0, 0, 0",
+  EMPTY_ALPHA: 0.35
 }, Wt = "8px";
 function Bt(i, t) {
   return {
@@ -755,7 +755,7 @@ H.styles = ht`
       width: 36px;
       height: 36px;
       flex-shrink: 0;
-      color: rgb(var(--notification-rgb, 120, 120, 120));
+      color: #ffffff;
     }
 
     .notification-text {
@@ -763,7 +763,7 @@ H.styles = ht`
       font-weight: 500;
       flex: 1;
       line-height: 1.3;
-      color: var(--primary-text-color);
+      color: #ffffff;
     }
 
     .priority-badge {
@@ -771,8 +771,8 @@ H.styles = ht`
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      color: rgb(var(--notification-rgb, 120, 120, 120));
-      border: 1px solid rgb(var(--notification-rgb, 120, 120, 120));
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.7);
       border-radius: 4px;
       padding: 2px 6px;
       flex-shrink: 0;
